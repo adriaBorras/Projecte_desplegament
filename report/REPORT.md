@@ -28,7 +28,33 @@ https://github.com/ludiemert/Full_Stack_App?tab=readme-ov-file
 
 ### Problemes detectats (si n’hi havia)
 
-No te una base de dades, aixi que s'ha de crear.
+No te una base de dades, aixi que s'ha de crear. (blog.sql)
+
+
+
+no carrega imatges de dockerhub:
+```bash
+
+
+borras@borras-portable:~$ docker pull hello-world
+Using default tag: latest
+latest: Pulling from library/hello-world
+failed to copy: httpReadSeeker: failed open: failed to do request: Get "https://docker-images-prod.6aa30f8b08e16409b46e0173d6de2f56.r2.cloudflarestorage.com/registry-v2/docker/registry/v2/blobs/sha256/1b/1b44b5a3e06a9aae883e7bf25e45c100be0bb81a0e01b32de604f3ac44711634/data?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=f1baa2dd9b876aeb89efebbfc9e5d5f4%2F20260308%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260308T193228Z&X-Amz-Expires=1200&X-Amz-SignedHeaders=host&X-Amz-Signature=ca58a7f83352b5630fc2e4f4599b96382c7d8bcac448684cbe15dcf02f7f4e93": dial tcp 172.64.66.1:443: i/o timeout
+borras@borras-portable:~$ 
+```
+```bash
+borras@borras-portable:~/GitThings/Projecte_desplegament$ curl https://registry-1.docker.io/v2/
+{"errors":[{"code":"UNAUTHORIZED","message":"authentication required","detail":null}]}
+
+```
+```bash
+borras@borras-portable:~/GitThings/Projecte_desplegament$ curl https://172.64.66.1
+curl: (35) OpenSSL/3.0.13: error:0A000410:SSL routines::sslv3 alert handshake failure
+borras@borras-portable:~/GitThings/Projecte_desplegament$ 
+
+```
+![alt text](img/image.png)
+
 
 ### Existència o no de .gitignore
 
