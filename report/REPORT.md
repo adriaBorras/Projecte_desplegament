@@ -21,7 +21,7 @@ Descriviu la situació del projecte abans de començar el treball de desplegamen
 
 Partim d'una aplicacio d'un repositori que te una api i un frentend.  
 
-repositori:
+repositori:  
 https://github.com/ludiemert/Full_Stack_App?tab=readme-ov-file
 
 
@@ -48,7 +48,8 @@ Què faltava perquè aquest projecte es pogués considerar “professional”?
 
 ### Model de branques utilitzat
 
-Branca main
+Branca main >
+Branca Dev >
 Branca per cada desenvolupador:
   branca-Borras (Adria Borras)
   branca- "" (Adrian )
