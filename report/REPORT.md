@@ -2,40 +2,68 @@
 
 ## 1. Dades generals
 
-Nom del projecte:
+Nom del projecte: Blog CRUD
 
-Integrants:
+Integrants:  Adrian , Adria Borras,
 
 Tecnologia principal (Laravel / React / Fullstack):
 
-Enllaç al repositori:
+Enllaç al repositori: https://github.com/adriaBorras/Projecte_desplegament
 
-Data d’entrega:
+Data d’entrega: ??
 
 ## 2. Estat inicial del projecte
 
 Descriviu la situació del projecte abans de començar el treball de desplegament.
 
-Incloeu:
 
-- Estructura inicial del repositori
-- Problemes detectats (si n’hi havia)
-- Existència o no de .gitignore
-- Existència o no de Docker
-- Problemes de configuració o dependències
+### Estructura inicial del repositori
+
+Partim d'una aplicacio d'un repositori que te una api i un frentend.  
+
+repositori:
+https://github.com/ludiemert/Full_Stack_App?tab=readme-ov-file
+
+
+
+### Problemes detectats (si n’hi havia)
+
+No te una base de dades, aixi que s'ha de crear.
+
+### Existència o no de .gitignore
+
+La aplicacio ja porta un .gitignore (pero s'aura d'editar!!!????)
+
+### Existència o no de Docker
+
+No Porta docker, hem d'implementar-ho per complet.
+
+### Problemes de configuració o dependències
 Reflexió breu:
 
 Què faltava perquè aquest projecte es pogués considerar “professional”?
 
 ## 3. Workflow Git aplicat
 
-Expliqueu:
 
-- Model de branques utilitzat
-- Convencions de noms
-- Estratègia de merge utilitzada
-- Ús (o no) de rebase
-- Incloeu exemples reals de commits rellevants (amb missatge i explicació del canvi).
+### Model de branques utilitzat
+
+Branca main
+Branca per cada desenvolupador:
+  branca-Borras (Adria Borras)
+  branca- "" (Adrian )
+
+### Convencions de noms
+
+  CamelCase  guions "-" per espais.
+
+### Estratègia de merge utilitzada
+
+### Ús (o no) de rebase
+
+### Incloeu exemples reals de commits rellevants (amb missatge i explicació del canvi).
+
+
 
 ## 4. Conflicte 1 – Mateixa línia
 
@@ -59,9 +87,12 @@ Mostreu el fragment amb:
 
 Expliqueu:
 
-- Quina decisió s’ha pres
-- Per què s’ha escollit aquesta opció
-- Com s’ha validat que funciona
+### Quina decisió s’ha pres
+
+### Per què s’ha escollit aquesta opció
+
+
+### Com s’ha validat que funciona
 
 ### 4.5 Reflexió
 
