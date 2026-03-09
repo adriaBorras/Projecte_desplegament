@@ -1,24 +1,25 @@
 import { db } from "../db.js";
 import jwt from "jsonwebtoken";
 
-// Retrieves posts from a database
-export const getPosts = (req, res) => {
-  // If the query string includes a category parameter,
-  // select all posts from the given category. Otherwise,
-  // select all posts.
-  const q = req.query.cat
-    ? "SELECT * FROM posts WHERE cat=?"
-    : "SELECT * FROM posts";
+export const getPosts = async (req, res) => {
+  let connection;
+  try {
+    connection = await db.getConnection();
+    const q = req.query.cat
+      ? "SELECT * FROM posts WHERE cat=?"
+      : "SELECT * FROM posts";
 
-  // Use the database object to query the database with the
-  // appropriate SQL statement and any necessary parameters.
-  db.query(q, [req.query.cat], (err, data) => {
-    // If there's an error, send a 500 status code and the error message
-    if (err) return res.status(500).send(err);
-
-    // Otherwise, send a 200 status code and the data as JSON
+    const [data] = await connection.query(q, [req.query.cat]);
+    console.log(res.status(200).json(data));
     return res.status(200).json(data);
-  });
+  } catch (err) {
+    console.error("Error en getPosts:", err);
+    return res
+      .status(500)
+      .json({ error: "Error interno del servidor", details: err.message });
+  } finally {
+    if (connection) connection.release();
+  }
 };
 
 // Retrieves a single post from the database
