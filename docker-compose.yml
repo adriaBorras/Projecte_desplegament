@@ -5,41 +5,36 @@ services:
     container_name: blog-db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: blog
+      MYSQL_USER: bloguser
+      MYSQL_PASSWORD: blogpass
     ports:
-      - "3307:3306"
+      - "3307:3306"   # host port 3307 -> container 3306
+    command: --default-authentication-plugin=mysql_native_password
     volumes:
       - db_data:/var/lib/mysql
-      - ./db-init:/docker-entrypoint-initdb.d  # carrega blog.sql
+      - ./db-init:/docker-entrypoint-initdb.d
 
   api:
     build: ./api
     container_name: blog-api
     restart: always
     ports:
-      - "${BACKEND_PORT}:8800"
+      - "8800:8800"
     env_file:
       - ./.env
     depends_on:
       - db
-    #volumes:
-    #  - ./api:/usr/src/app
-    command: ["node", "index.js"]
 
   front:
     build: ./front
     container_name: blog-front
     restart: always
     ports:
-      - "${FRONTEND_PORT}:3000"
+      - "3000:3000"
     depends_on:
       - api
-    #volumes:
-    #  - ./front:/usr/src/app
-    command: ["npm", "start"]
 
 volumes:
   db_data:
