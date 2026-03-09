@@ -17,3 +17,12 @@ export const db = mysql.createConnection({
   password: process.env.MYSQL_PASSWORD, 
   database: process.env.MYSQL_DATABASE 
 });
+
+// db.getConnection((err, connection) => {
+//   if (err) {
+//     console.error("DB pool connection error:", err);
+//     return;
+//   }
+//   console.log("Connected to MySQL via pool!");
+//   connection.release(); // release back to pool
+// });

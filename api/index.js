@@ -31,6 +31,12 @@ app.use("/api/posts", postRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 
+// Global error handler
+// app.use((err, req, res, next) => {
+//   console.error("Global error:", err);
+//   res.status(500).json({ error: err.message || "Internal Server Error" });
+// });
+
 app.listen(8800, () => {
   console.log("Connected!!!!");
 });
