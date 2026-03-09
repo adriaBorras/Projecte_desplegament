@@ -1,13 +1,16 @@
-FROM node:18
+FROM node:18-alpine
 
 # Create app directory
 WORKDIR /usr/src/app
 
 # Copy package.json and package-lock.json
-COPY package*.json ./
+COPY package.json yarn.lock ./
 
 # Install dependencies
-RUN npm install
+#RUN npm install
+
+#RUN yarn install --frozen-lockfile
+RUN yarn install
 
 # Copy all backend files
 COPY . .

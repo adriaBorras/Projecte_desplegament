@@ -53,7 +53,8 @@ const Register = () => {
           onChange={handleChange}
         />
         <button onClick={handleSubmit}>Register</button>
-        {err && <p>{err}</p>}
+        {/* {err && <p>{err}</p>} */}
+        {err && <p>{typeof err === "string" ? err : JSON.stringify(err)}</p>}
         <span>
           Do you have an account? <Link to="/login">Login</Link>
         </span>
