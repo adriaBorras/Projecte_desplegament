@@ -44,8 +44,6 @@ Aquestel [ - blog.sql](../db-init/blog.sql) es un arxiu sql q fa el seguent:
   `7db62acfb0cfb4f3ac02bcf727ccb91254850cf1`
   `d70c475818296048aa88dbd99fd429fbb33ee709`
   `c5ca5fbbb957c3e2d6231aa1941de755d1e9237e`
-3. Durant la dockeritzacio va donar problemas tambe per el mateix motiu el plugin de autenticacio.
-   - Amb el codi actualitzat he pujat la versio al docker al **mysql 8.0.4^**. 
 
 ### Existència o no de .gitignore
 
@@ -56,9 +54,9 @@ La aplicacio ja porta un .gitignore (pero s'aura d'editar!!!????)
 No Porta docker, hem d'implementar-ho per complet.
 
 ### Problemes de configuració o dependències
-Reflexió breu:
 
-Què faltava perquè aquest projecte es pogués considerar “professional”?
+1. Durant la dockeritzacio va donar problemas tambe per el mateix motiu el plugin de autenticacio.
+   - Amb el codi actualitzat he pujat la versio al docker al **mysql 8.0.4^**. 
 
 ## 3. Workflow Git aplicat
 
@@ -126,31 +124,39 @@ Què heu après d’aquest conflicte?
 
 ### 6.1 Arquitectura final
 
-Descriviu els serveis definits a docker-compose.yml.
+Els serveis que hem hagut de definir al docker-compose.yml son: 
+  *Hem creat dos Dockerfile, un per cada servei d'aplicació.*
+
+- blog-api: Node.js con Express.
+- blog-front: React.
+- Base de Datos: MySQL-8.4. 
 
 ### 6.2 Variables d’entorn
 
-Aquest projecte necesita les seguents variables de entron
-`DB_HOST=db
+Aquest projecte necesita les seguents variables del .env per funcionar tant en desenvolpament com en producció:
+
+```
+DB_HOST=db
 DB_PORT=3306
 MYSQL_ROOT_PASSWORD=
 MYSQL_DATABASE=blog
 MYSQL_USER=
-MYSQL_PASSWORD=`
-
-# Backend
+MYSQL_PASSWORD=
 BACKEND_PORT=8800
-
-# Frontend
 FRONTEND_PORT=3000
+```
 
 ### 6.3 Persistència (si s'escau)
 
-Expliqueu l’ús de volums.
 
 ###  6.4 Problemes trobats
 
-Incloeu errors reals i com s’han resolt.
+1. Al principi teniam al docker compose la tag mysql:8 per el mysql i donaba aquest error, 
+per el error explicat anteriorment, canviem la tag per mysql:8.4 despres de haber actualitzat 
+el codi per soportar el nou mode d'autenticació.
+`Error: ER_NOT_SUPPORTED_AUTH_MODE: Client does not support authentication protocol requested by server; consider upgrading MySQL client`
+
+2. 
 
 ## 7. Prova de desplegament des de zero
 
@@ -205,7 +211,7 @@ curl: (35) OpenSSL/3.0.13: error:0A000410:SSL routines::sslv3 alert handshake fa
 borras@borras-portable:~/GitThings/Projecte_desplegament$ 
 
 ```
-Arreclat creant i editant el seguent arxiu:  
+Arreglat creant i editant el seguent arxiu:  
 desactivar ipv6:
 ![alt text](img/image.png)
 
