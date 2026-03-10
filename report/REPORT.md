@@ -4,7 +4,7 @@
 
 Nom del projecte: Blog CRUD
 
-Integrants:  Adrian , Adria Borras,
+Integrants: Adrian , Adria Borras,
 
 Tecnologia principal (React / Fullstack):
 
@@ -16,36 +16,32 @@ Data d’entrega: ??
 
 Descriviu la situació del projecte abans de començar el treball de desplegament.
 
-
 ### Estructura inicial del repositori
 
-Partim d'una aplicacio d'un repositori que te una api i un frentend.  
+Partim d'una aplicacio d'un repositori que te una api i un frentend.
 
 repositori:  
 https://github.com/ludiemert/Full_Stack_App?tab=readme-ov-file
 
-
-
 ### Problemes detectats (si n’hi havia)
 
 1. No te una base de dades, aixi que s'ha de crear:
-` Hem decidit utilitzar mysql com a gestor de bbdd `
+   `Hem decidit utilitzar mysql com a gestor de bbdd`
 
-Aquestel [ - blog.sql](../db-init/blog.sql) es un arxiu sql q fa el seguent: 
+Aquestel [ - blog.sql](../db-init/blog.sql) es un arxiu sql q fa el seguent:
 
 - Crea la base de dades en mysql.
 - Crea les taules per els posts i users.
 - Inserta registres de exemple per les taules posts i users.
 
-2. El codi de la api no estaba actualitzat per funcionar amb **mysql 8.0.4^** i al posar la applicacio en funcionament amb una versio de mysql retornava un error amb el plugin de authenticacio `mysql_native_password`, no conectaba el client ( llibreria del backend ) amb el servidor, ja que la nova versio mysql esperaba el plugin `caching_sha256_password`, y el client ( api>backend>llibreria mysql ) tractaba conectar amb `mysql_native_password`. 
-  - Nomes funcionaba amb versions inferiors. 
-  - Vam haver de adaptar el codi una mica per funcionar amb una llibreria mes moderna ( mysql2/promises ), per tal de fer funcionar el codi amb versiones noves i segures. Aqui els comits on s'han fet els canvis: 
+2. El codi de la api no estaba actualitzat per funcionar amb **mysql 8.0.4^** i al posar la applicacio en funcionament amb una versio de mysql retornava un error amb el plugin de authenticacio `mysql_native_password`, no conectaba el client de mysql del backend ( llibreria del backend ) amb el servidor, ja que la nova versio mysql esperaba el plugin `caching_sha256_password`, y el client ( api>backend>llibreria mysql ) tractaba conectar amb `mysql_native_password`.
+
+- Nomes funcionaba amb versions inferiors.
+- Vam acabar adaptant el codi una mica per funcionar amb una llibreria mes moderna ( mysql2/promises ), per tal de fer funcionar el codi amb versiones noves i segures. Aqui els comits on s'han fet els canvis:
   `3fd6b0e7a125e642291f5ac949a0ce014b061242`
   `7db62acfb0cfb4f3ac02bcf727ccb91254850cf1`
   `d70c475818296048aa88dbd99fd429fbb33ee709`
   `c5ca5fbbb957c3e2d6231aa1941de755d1e9237e`
-3. Durant la dockeritzacio va donar problemas tambe per el mateix motiu el plugin de autenticacio.
-   - Amb el codi actualitzat he pujat la versio al docker al **mysql 8.0.4^**. 
 
 ### Existència o no de .gitignore
 
@@ -57,38 +53,48 @@ No Porta docker, hem d'implementar-lo per complet.
 
 ### Problemes de configuració o dependències
 
-1 - Al crear un nou usuari a la base de dades, ens hem trobat aquest error:
+1. Vam tenir problemes amb el servei de db, al docker-compose, ja que vam posar de imatge **mysql:8** i llavors agafaba la versio 8 mes recent, llavors amb aquesta versio el`client mysql del backend` _( llibreria de mysql que conecta el codi de la api amb la db)_ tractaba de autenticarse amb el plugin de autenticacio `mysql_native_password` i el servei de db, esperaba establir la conexio amb `caching_sha256_password`, no lograba establir conexion api amb db, i llavors al frontend al tractar de fer cualsevol cosa que necesitaba db, donava el seguent error:
 
 ```bash
-{"code":"ER_NOT_SUPPORTED_AUTH_MODE","errno":1251,"sqlMessage":"Client does not support authentication protocol requested by server; consider upgrading MySQL client","sqlState":"08004","fatal":true}
+{"code":"ER_NOT_SUPPORTED_AUTH_MODE","errno":1251,"sqlMessage":"Client does not support
+ authentication protocol requested by server; consider upgrading MySQL client",
+ "sqlState":"08004","fatal":true}
 ```
-L'aplicacio no te documentades les versions utilitzades i ens hem trobat que per fer-la funcionar hem hagut de fer "Downgrade" de la veriso de Mysql.
-Al docker-composer.yml estavem utilitzant d'imatge: mysql:8, que agafava la versio 8.4.8 pero era nessessari utilitzar una versio inferior. Com per exemple la 8.0.45.
 
-El motiu es que Mysql a partir de la versio 8.04 utilitza caching_sha2_password com a autenticacio per defecte, i en el moment en que es va desenvolupar l'aplicacio Mysql utilitzava mysql_native_password.
+L'aplicacio no te documentades les versions utilitzades. Vam trobar tres posibles solucions, hem realitzat i documentat les dues mes factibles:
 
+- Fer "Downgrade" de la veriso de Mysql amb una compatible amb el plugin de autenticacio `mysql_native_password`.
 
-2 - l'api de l'aplicacio utilitza yarn.lock com a sistema de control de dependencies. En ves de package-lock.json.
+  Al docker-composer.yml estavem utilitzant d'imatge: mysql:8, que agafava la versio 8.4.8 pero era nessessari utilitzar una versio inferior per poder utilitzar el plugin `mysql_native_password` com per exemple la 8.0.45, a mes a mes era necesari posar la seguent linea de configuracio al docker-compose per utilitzar el aquest plguin per defecte.
+
+  ```yml
+  command: --default-authentication-plugin=mysql_native_password
+  # Amb aquestes dues modificacions podiem tenir l' aplicacio funcionant
+  # tot i que d' aquesta manera vulnerable.
+  ```
+
+- Vam acabar adaptant el codi una mica per funcionar amb una llibreria mes moderna _( mysql2/promises )_, per tal de fer funcionar el codi amb versiones noves i segures de mysql, y amb el plugin `caching_sha256_password`, d' aquesta manera ja no calia tampoc la linea `--default-authentication-plugin=mysql_native_password` al docker-compose ja que el client de mysql del backend establia conexio amb el plugin modern. Aqui els comits on s'han fet els canvis:
+  `3fd6b0e7a125e642291f5ac949a0ce014b061242`
+  `7db62acfb0cfb4f3ac02bcf727ccb91254850cf1`
+  `d70c475818296048aa88dbd99fd429fbb33ee709`
+  `c5ca5fbbb957c3e2d6231aa1941de755d1e9237e`
+
+---
+
+2. L'api de l'aplicacio utilitza yarn.lock com a sistema de control de dependencies. En ves de package-lock.json.
 S'ha de tenir en compte a l'hora de crear el dockerfile.  
-En ves de fer RUN npm install, s'ha de fer RUN yarn install.  
+En ves de fer RUN npm install, s'ha de fer RUN yarn install.
 
-Reflexió breu:
-
-Què faltava perquè aquest projecte es pogués considerar “professional”?
-
-Millor documentacio i, opcionalment algun mitja de desplegament com docker.
 
 ## 3. Workflow Git aplicat
-
-
 
 ### Model de branques utilitzat
 
 Branca main >
 Branca Dev >
 Branca per cada desenvolupador:
-  branca-Borras (Adria Borras)
-  branca-Gonzalez (Adrian )
+branca-Borras (Adria Borras)
+branca-Gonzalez (Adrian )
 
 ### Convencions de noms
 
@@ -117,9 +123,11 @@ Incloeu la sortida real de Git.
 ### 4.3 Marcadors de conflicte
 
 Mostreu el fragment amb:
+
 ```
 
 ```
+
 ### 4.4 Resolució aplicada
 
 Expliqueu:
@@ -148,40 +156,49 @@ Què heu après d’aquest conflicte?
 
 ### 6.1 Arquitectura final
 
-Descriviu els serveis definits a docker-compose.yml.
+Els serveis que hem hagut de definir al docker-compose.yml son:
+_Hem creat dos Dockerfile, un per cada servei d'aplicació._
+
+- blog-api: Node.js con Express.
+- blog-front: React.
+- Base de Datos: MySQL-8.4.
 
 ### 6.2 Variables d’entorn
 
-Aquest projecte necesita les seguents variables de entron
-`DB_HOST=db
+Aquest projecte necesita les seguents variables del .env per funcionar tant en desenvolpament com en producció:
+
+```
+DB_HOST=db
 DB_PORT=3306
 MYSQL_ROOT_PASSWORD=
 MYSQL_DATABASE=blog
 MYSQL_USER=
-MYSQL_PASSWORD=`
-
-# Backend
+MYSQL_PASSWORD=
 BACKEND_PORT=8800
-
-# Frontend
 FRONTEND_PORT=3000
+```
 
 ### 6.3 Persistència (si s'escau)
 
-Expliqueu l’ús de volums.
+### 6.4 Problemes trobats
 
-###  6.4 Problemes trobats
+1. Al principi teniam al docker compose la tag mysql:8 per el mysql i donaba aquest error,
+   per el error explicat anteriorment, canviem la tag per mysql:8.4 despres de haber actualitzat
+   el codi per soportar el nou mode d'autenticació.
+   `Error: ER_NOT_SUPPORTED_AUTH_MODE: Client does not support authentication protocol requested by server; consider upgrading MySQL client`
 
-Incloeu errors reals i com s’han resolt.
+2.
 
 ## 7. Prova de desplegament des de zero
 
-  Expliqueu els passos exactes que hauria de seguir una persona externa:
+Expliqueu els passos exactes que hauria de seguir una persona externa:
+
 - Clonar repositori
 - Executar comanda
-- Accedir a l’aplicació  
+- Accedir a l’aplicació
 
 Indiqueu també:
+
 - Ports utilitzats
 - Credencials de prova (si n’hi ha)
 
@@ -192,14 +209,16 @@ Descriviu què ha fet cada membre de l’equip.
 ## 9. Temps invertit
 
 Indiqueu aproximadament:
+
 - Temps dedicat a Git
-    Adria Borras: 1 hora
+  Adria Borras: 1 hora
 - Temps dedicat a Docker
 
-    Adria Borras: 4 hores (No productives, intentant solucionar problemes)
-- Temps dedicat a documentació:  
+  Adria Borras: 4 hores (No productives, intentant solucionar problemes)
 
-    Adria Borras: 2 hores
+- Temps dedicat a documentació:
+
+  Adria Borras: 2 hores
 
 ## 10. Reflexió final
 
@@ -209,17 +228,17 @@ Responeu breument:
 - Què faríeu diferent en un projecte real?
 - Heu entès realment com funcionen els conflictes i Docker?
 
-
 ## 11. Altres problemes durant el projecte.
 
 Adria Borras:  
 No poder fer pull de les imatges de dockerhub:
+
 ```bash
 borras@borras-portable:~$ docker pull hello-world
 Using default tag: latest
 latest: Pulling from library/hello-world
 failed to copy: httpReadSeeker: failed open: failed to do request: Get "https://docker-images-prod.6aa30f8b08e16409b46e0173d6de2f56.r2.cloudflarestorage.com/registry-v2/docker/registry/v2/blobs/sha256/1b/1b44b5a3e06a9aae883e7bf25e45c100be0bb81a0e01b32de604f3ac44711634/data?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=f1baa2dd9b876aeb89efebbfc9e5d5f4%2F20260308%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260308T193228Z&X-Amz-Expires=1200&X-Amz-SignedHeaders=host&X-Amz-Signature=ca58a7f83352b5630fc2e4f4599b96382c7d8bcac448684cbe15dcf02f7f4e93": dial tcp 172.64.66.1:443: i/o timeout
-borras@borras-portable:~$ 
+borras@borras-portable:~$
 ```
 
 ```bash
@@ -230,12 +249,10 @@ borras@borras-portable:~/GitThings/Projecte_desplegament$ curl https://registry-
 ```bash
 borras@borras-portable:~/GitThings/Projecte_desplegament$ curl https://172.64.66.1
 curl: (35) OpenSSL/3.0.13: error:0A000410:SSL routines::sslv3 alert handshake failure
-borras@borras-portable:~/GitThings/Projecte_desplegament$ 
+borras@borras-portable:~/GitThings/Projecte_desplegament$
 
 ```
-Arreclat creant i editant el seguent arxiu:  
+
+Arreglat creant i editant el seguent arxiu:  
 desactivar ipv6:
 ![alt text](img/image.png)
-
-
-
