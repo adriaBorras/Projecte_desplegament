@@ -28,11 +28,24 @@ https://github.com/ludiemert/Full_Stack_App?tab=readme-ov-file
 
 ### Problemes detectats (si n’hi havia)
 
-No te una base de dades, aixi que s'ha de crear:  
-[ - blog.sql](../db-init/blog.sql)
+1. No te una base de dades, aixi que s'ha de crear:
+` Hem decidit utilitzar mysql com a gestor de bbdd `
 
+Aquestel [ - blog.sql](../db-init/blog.sql) es un arxiu sql q fa el seguent: 
 
+- Crea la base de dades en mysql.
+- Crea les taules per els posts i users.
+- Inserta registres de exemple per les taules posts i users.
 
+2. El codi de la api no estaba actualitzat per funcionar amb **mysql 8.0.4^** i al posar la applicacio en funcionament amb una versio de mysql retornava un error amb el plugin de authenticacio `mysql_native_password`, no conectaba el client ( llibreria del backend ) amb el servidor, ja que la nova versio mysql esperaba el plugin `caching_sha256_password`, y el client ( api>backend>llibreria mysql ) tractaba conectar amb `mysql_native_password`. 
+  - Nomes funcionaba amb versions inferiors. 
+  - Vam haver de adaptar el codi una mica per funcionar amb una llibreria mes moderna ( mysql2/promises ), per tal de fer funcionar el codi amb versiones noves i segures. Aqui els comits on s'han fet els canvis: 
+  `3fd6b0e7a125e642291f5ac949a0ce014b061242`
+  `7db62acfb0cfb4f3ac02bcf727ccb91254850cf1`
+  `d70c475818296048aa88dbd99fd429fbb33ee709`
+  `c5ca5fbbb957c3e2d6231aa1941de755d1e9237e`
+3. Durant la dockeritzacio va donar problemas tambe per el mateix motiu el plugin de autenticacio.
+   - Amb el codi actualitzat he pujat la versio al docker al **mysql 8.0.4^**. 
 
 ### Existència o no de .gitignore
 
@@ -56,19 +69,17 @@ Branca main >
 Branca Dev >
 Branca per cada desenvolupador:
   branca-Borras (Adria Borras)
-  branca- "" (Adrian )
+  branca-Gonzalez (Adrian )
 
 ### Convencions de noms
 
-  CamelCase  guions "-" per espais.
+CamelCase  guions "-" per espais.
 
 ### Estratègia de merge utilitzada
 
 ### Ús (o no) de rebase
 
 ### Incloeu exemples reals de commits rellevants (amb missatge i explicació del canvi).
-
-
 
 ## 4. Conflicte 1 – Mateixa línia
 
@@ -84,9 +95,7 @@ Incloeu la sortida real de Git.
 
 Mostreu el fragment amb:
 ```
-<<<<<<< HEAD
-=======
->>>>>>> branch
+
 ```
 ### 4.4 Resolució aplicada
 
@@ -121,7 +130,19 @@ Descriviu els serveis definits a docker-compose.yml.
 
 ### 6.2 Variables d’entorn
 
-Expliqueu quines variables són necessàries i per què no es versiona el .env.
+Aquest projecte necesita les seguents variables de entron
+`DB_HOST=db
+DB_PORT=3306
+MYSQL_ROOT_PASSWORD=
+MYSQL_DATABASE=blog
+MYSQL_USER=
+MYSQL_PASSWORD=`
+
+# Backend
+BACKEND_PORT=8800
+
+# Frontend
+FRONTEND_PORT=3000
 
 ### 6.3 Persistència (si s'escau)
 
