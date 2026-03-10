@@ -6,7 +6,7 @@ Nom del projecte: Blog CRUD
 
 Integrants:  Adrian , Adria Borras,
 
-Tecnologia principal (Laravel / React / Fullstack):
+Tecnologia principal (React / Fullstack):
 
 Enllaç al repositori: https://github.com/adriaBorras/Projecte_desplegament
 
@@ -36,7 +36,7 @@ No te una base de dades, aixi que s'ha de crear:
 
 ### Existència o no de .gitignore
 
-La aplicacio ja porta un .gitignore (pero s'aura d'editar!!!????)
+La aplicacio ja porta un .gitignore,  pero 
 
 ### Existència o no de Docker
 
