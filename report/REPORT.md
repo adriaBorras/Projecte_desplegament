@@ -28,26 +28,45 @@ https://github.com/ludiemert/Full_Stack_App?tab=readme-ov-file
 
 ### Problemes detectats (si n’hi havia)
 
+
 No te una base de dades, aixi que s'ha de crear:  
-[ - blog.sql](../db-init/blog.sql)
-
-
+[ - blog.sql](../db-init/blog.sql)  
+Farem un entrypoint al docker-compose.yml per poder carregar les dades a l'hora d'executar el contenidor "db".
 
 
 ### Existència o no de .gitignore
 
-La aplicacio ja porta un .gitignore,  pero 
+La aplicacio ja porta diferents .gitignore un al backend, un al forntend, i un a la carpeta del projecte. Nosaltres els combinarem en un sol .gitignore i el posarem a l'arrel del projecte.
 
 ### Existència o no de Docker
 
-No Porta docker, hem d'implementar-ho per complet.
+No Porta docker, hem d'implementar-lo per complet.
 
 ### Problemes de configuració o dependències
+
+1 - Al crear un nou usuari a la base de dades, ens hem trobat aquest error:
+
+```bash
+{"code":"ER_NOT_SUPPORTED_AUTH_MODE","errno":1251,"sqlMessage":"Client does not support authentication protocol requested by server; consider upgrading MySQL client","sqlState":"08004","fatal":true}
+```
+L'aplicacio no te documentades les versions utilitzades i ens hem trobat que per fer-la funcionar hem hagut de fer "Downgrade" de la veriso de Mysql.
+Al docker-composer.yml estavem utilitzant d'imatge: mysql:8, que agafava la versio 8.4.8 pero era nessessari utilitzar una versio inferior. Com per exemple la 8.0.45.
+
+El motiu es que Mysql a partir de la versio 8.04 utilitza caching_sha2_password com a autenticacio per defecte, i en el moment en que es va desenvolupar l'aplicacio Mysql utilitzava mysql_native_password.
+
+
+2 - l'api de l'aplicacio utilitza yarn.lock com a sistema de control de dependencies. En ves de package-lock.json.
+S'ha de tenir en compte a l'hora de crear el dockerfile.  
+En ves de fer RUN npm install, s'ha de fer RUN yarn install.  
+
 Reflexió breu:
 
 Què faltava perquè aquest projecte es pogués considerar “professional”?
 
+Millor documentacio i, opcionalment algun mitja de desplegament com docker.
+
 ## 3. Workflow Git aplicat
+
 
 
 ### Model de branques utilitzat
@@ -60,11 +79,15 @@ Branca per cada desenvolupador:
 
 ### Convencions de noms
 
-  CamelCase  guions "-" per espais.
+  CamelCase i guions "-" per espais.
 
 ### Estratègia de merge utilitzada
 
+Fem merges normals per combinar les branques de desenvolupament de cada desenvolupador amb la branca Dev, un cop comprobat que funciona a la branca Dev, es fa un merge desde la Main amb la Dev.
+
 ### Ús (o no) de rebase
+
+No es fa rebase a la branca main per evitar reescriure l’historial compartit.
 
 ### Incloeu exemples reals de commits rellevants (amb missatge i explicació del canvi).
 
@@ -95,7 +118,6 @@ Expliqueu:
 ### Quina decisió s’ha pres
 
 ### Per què s’ha escollit aquesta opció
-
 
 ### Com s’ha validat que funciona
 
@@ -150,8 +172,13 @@ Descriviu què ha fet cada membre de l’equip.
 
 Indiqueu aproximadament:
 - Temps dedicat a Git
+    Adria Borras: 1 hora
 - Temps dedicat a Docker
-- Temps dedicat a documentació
+
+    Adria Borras: 4 hores (No productives, intentant solucionar problemes)
+- Temps dedicat a documentació:  
+
+    Adria Borras: 2 hores
 
 ## 10. Reflexió final
 
@@ -164,7 +191,8 @@ Responeu breument:
 
 ## 11. Altres problemes durant el projecte.
 
-No carrega imatges de dockerhub:
+Adria Borras:  
+No poder fer pull de les imatges de dockerhub:
 ```bash
 borras@borras-portable:~$ docker pull hello-world
 Using default tag: latest
@@ -189,29 +217,4 @@ desactivar ipv6:
 ![alt text](img/image.png)
 
 
-Restarting api:
 
-
-docker compose build --no-cache api
-
-docker logs blog-api
-
-
-
-borras@borras-portable:~/GitThings/Projecte_desplegament/api$ yarn add dotenv
-yarn add v1.22.22
-warning ../../../package.json: No license field
-(node:118124) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-[1/4] Resolving packages...
-[2/4] Fetching packages...
-[3/4] Linking dependencies...
-[4/4] Building fresh packages...
-success Saved lockfile.
-success Saved 1 new dependency.
-info Direct dependencies
-└─ dotenv@17.3.1
-info All dependencies
-└─ dotenv@17.3.1
-Done in 0.62s.
-borras@borras-portable:~/GitThings/Projecte_desplegament/api$ 
