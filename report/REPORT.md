@@ -53,7 +53,7 @@ No Porta docker, hem d'implementar-lo per complet.
 
 ### Problemes de configuració o dependències
 
-1. Vam tenir problemes amb el servei de db, al docker-compose, ja que vam posar de imatge **mysql:8** i llavors agafaba la versio 8 mes recent, llavors amb aquesta versio el`client mysql del backend` _( llibreria de mysql que conecta el codi de la api amb la db)_ tractaba de autenticarse amb el plugin de autenticacio `mysql_native_password` i el servei de db, esperaba establir la conexio amb `caching_sha256_password`, no lograba establir conexion api amb db, i llavors al frontend al tractar de fer cualsevol cosa que necesitaba db, donava el seguent error:
+1. Vam tenir problemes amb el servei de db, amb les versions superiors 8.0.4 de mysql, per que el`client mysql del backend` _( llibreria de mysql que conecta el codi de la api amb la db)_ tractaba de autenticarse amb el plugin de autenticacio `mysql_native_password` i el servei de db, en aquestes noves versions esperaba establir la conexio amb `caching_sha256_password`, com a resultat no lograba establir conexio codi-api amb db, i llavors al frontend al tractar de fer cualsevol cosa que necesitaba db, donava el seguent error:
 
 ```bash
 {"code":"ER_NOT_SUPPORTED_AUTH_MODE","errno":1251,"sqlMessage":"Client does not support
@@ -65,15 +65,7 @@ L'aplicacio no te documentades les versions utilitzades. Vam trobar tres posible
 
 - Fer "Downgrade" de la veriso de Mysql amb una compatible amb el plugin de autenticacio `mysql_native_password`.
 
-  Al docker-composer.yml estavem utilitzant d'imatge: mysql:8, que agafava la versio 8.4.8 pero era nessessari utilitzar una versio inferior per poder utilitzar el plugin `mysql_native_password` com per exemple la 8.0.45, a mes a mes era necesari posar la seguent linea de configuracio al docker-compose per utilitzar el aquest plguin per defecte.
-
-  ```yml
-  command: --default-authentication-plugin=mysql_native_password
-  # Amb aquestes dues modificacions podiem tenir l' aplicacio funcionant
-  # tot i que d' aquesta manera vulnerable.
-  ```
-
-- Vam acabar adaptant el codi una mica per funcionar amb una llibreria mes moderna _( mysql2/promises )_, per tal de fer funcionar el codi amb versiones noves i segures de mysql, y amb el plugin `caching_sha256_password`, d' aquesta manera ja no calia tampoc la linea `--default-authentication-plugin=mysql_native_password` al docker-compose ja que el client de mysql del backend establia conexio amb el plugin modern. Aqui els comits on s'han fet els canvis:
+- Vam acabar adaptant el codi una mica per funcionar amb una llibreria mes moderna _( mysql2/promises )_, per tal de fer funcionar el codi amb versiones noves i segures de mysql, y amb el plugin `caching_sha256_password`, d' aquesta manera el client de mysql del backend establia conexio amb el plugin modern. Aqui els comits on s'han fet els canvis:
   `3fd6b0e7a125e642291f5ac949a0ce014b061242`
   `7db62acfb0cfb4f3ac02bcf727ccb91254850cf1`
   `d70c475818296048aa88dbd99fd429fbb33ee709`
@@ -82,9 +74,24 @@ L'aplicacio no te documentades les versions utilitzades. Vam trobar tres posible
 ---
 
 2. L'api de l'aplicacio utilitza yarn.lock com a sistema de control de dependencies. En ves de package-lock.json.
-S'ha de tenir en compte a l'hora de crear el dockerfile.  
-En ves de fer RUN npm install, s'ha de fer RUN yarn install.
+   S'ha de tenir en compte a l'hora de crear el dockerfile.  
+   En ves de fer RUN npm install, s'ha de fer RUN yarn install.
 
+---
+
+3. Al configurar el cloudflare tunnels per a l'aplicacio, donaba un error de `Invalid Host Headers request` degut a una proteccio nativa de express que tracata d' evitar atacs de dns rebinding, aquet tipus de atacs s' utiliztan per saltarse el cors.
+
+- Hem configurtat el cloudflare tunnel per que faci les request desde localhost, aixo mitjan una opcio que te el servei, que realitza modifica el header de la request per a que sigui localhost.
+  _ironicament aixi et pots saltar la protecio de express de dns rebinding abusant de una vulnerabilidad de tipus security missconfiguration_
+
+- Altre solucio seria configurar els "allowed hosts" al arxiu de configuració `webpack.config.js` de aquesta manera:
+
+```JavaScript
+// aixo es un exemple
+devServer: {
+  allowedHosts: ['.tusitio.com', 'localhost'],
+}
+```
 
 ## 3. Workflow Git aplicat
 
@@ -180,14 +187,44 @@ FRONTEND_PORT=3000
 
 ### 6.3 Persistència (si s'escau)
 
+1. Volumen nombrado (`db_data`)
+
+- **Definición:** Declarado en `volumes:` como `db_data`.
+- **Uso:** Montado en el servicio `db` → `/var/lib/mysql`.
+- **Propósito:** Persistir los datos de MySQL aunque el contenedor se elimine o recree.
+
+2.  Bind Mounts
+
+- **`./db-init:/docker-entrypoint-initdb.d` (db)**
+  - Ejecuta scripts SQL o shell al iniciar la base de datos por primera vez.
+
 ### 6.4 Problemes trobats
 
-1. Al principi teniam al docker compose la tag mysql:8 per el mysql i donaba aquest error,
-   per el error explicat anteriorment, canviem la tag per mysql:8.4 despres de haber actualitzat
-   el codi per soportar el nou mode d'autenticació.
-   `Error: ER_NOT_SUPPORTED_AUTH_MODE: Client does not support authentication protocol requested by server; consider upgrading MySQL client`
+1. Vam tenir problemes amb el servei de db, al docker-compose, ja que vam posar de imatge **mysql:8** i llavors agafaba la versio 8 mes recent, llavors amb aquesta versio el`client mysql del backend` _( llibreria de mysql que conecta el codi de la api amb la db)_ tractaba de autenticarse amb el plugin de autenticacio `mysql_native_password` i el servei de db, esperaba establir la conexio amb `caching_sha256_password`, no lograba establir conexion api amb db, i llavors al frontend al tractar de fer cualsevol cosa que necesitaba db, donava el seguent error:
 
-2.
+```bash
+{"code":"ER_NOT_SUPPORTED_AUTH_MODE","errno":1251,"sqlMessage":"Client does not support
+ authentication protocol requested by server; consider upgrading MySQL client",
+ "sqlState":"08004","fatal":true}
+```
+
+L'aplicacio no te documentades les versions utilitzades. Vam trobar tres posibles solucions, hem realitzat i documentat les dues mes factibles:
+
+- Fer "Downgrade" de la veriso de Mysql amb una compatible amb el plugin de autenticacio `mysql_native_password`.
+
+  Al docker-composer.yml estavem utilitzant d'imatge: mysql:8, que agafava la versio 8.4.8 pero era nessessari utilitzar una versio inferior per poder utilitzar el plugin `mysql_native_password` com per exemple la 8.0.45, a mes a mes era necesari posar la seguent linea de configuracio al docker-compose per utilitzar el aquest plguin per defecte.
+
+  ```yml
+  command: --default-authentication-plugin=mysql_native_password
+  # Amb aquestes dues modificacions podiem tenir l' aplicacio funcionant
+  # tot i que d' aquesta manera vulnerable.
+  ```
+
+- Vam acabar adaptant el codi una mica per funcionar amb una llibreria mes moderna _( mysql2/promises )_, per tal de fer funcionar el codi amb versiones noves i segures de mysql, y amb el plugin `caching_sha256_password`, d' aquesta manera ja no calia tampoc la linea `--default-authentication-plugin=mysql_native_password` al docker-compose ja que el client de mysql del backend establia conexio amb el plugin modern. Aqui els comits on s'han fet els canvis:
+  `3fd6b0e7a125e642291f5ac949a0ce014b061242`
+  `7db62acfb0cfb4f3ac02bcf727ccb91254850cf1`
+  `d70c475818296048aa88dbd99fd429fbb33ee709`
+  `c5ca5fbbb957c3e2d6231aa1941de755d1e9237e`
 
 ## 7. Prova de desplegament des de zero
 
