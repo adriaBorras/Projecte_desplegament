@@ -121,11 +121,29 @@ No es fa rebase a la branca main per evitar reescriure l’historial compartit.
 
 ### 4.1 Com s’ha provocat
 
-Hem cambiat una petita cosa del codi en `/api/routes/auth.js:6` 
+- Hem cambiat una petita cosa del codi en `/api/routes/auth.js:6` 
+
 ![aaa](./img/image3.png)
-Despres crear la pull request y fet merge a Dev.
+
+- Despres he creat la pull request y fet merge a Dev.
+
 ![alt text](./img/image-1.png)
 ![alt text](./img/image-2.png)
+
+- El meu company ha arreglat el bug y ha fet un PR, aquest posa que no es posible fer merge automaticament i haurem de resoldre manualment.
+
+![alt text](./img/image-4.png)
+
+- El company fent click a resolve conflicts per acabar de fer merge de la PR ha entrat a el seguent menu.
+
+![alt text](./img/image-5.png)
+![alt text](./img/image-8.png)
+![alt text](./img/image-6.png)
+
+- Un cop el company a resolt els conflictes fa merge pull request.
+
+![alt text](./img/image-7.png)
+
 
 ### 4.2 Missatge d’error generat
 
