@@ -121,7 +121,11 @@ No es fa rebase a la branca main per evitar reescriure l’historial compartit.
 
 ### 4.1 Com s’ha provocat
 
-Expliqueu exactament quins canvis ha fet cada membre.
+Hem cambiat una petita cosa del codi en `/api/routes/auth.js:6` 
+![aaa](./img/image3.png)
+Despres crear la pull request y fet merge a Dev.
+![alt text](./img/image-1.png)
+![alt text](./img/image-2.png)
 
 ### 4.2 Missatge d’error generat
 
