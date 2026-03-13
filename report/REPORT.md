@@ -52,9 +52,20 @@ Al docker-composer.yml estavem utilitzant d'imatge: mysql:8, que agafava la vers
 El motiu es que Mysql a partir de la versio 8.04 utilitza caching_sha2_password com a autenticacio per defecte, i en el moment en que es va desenvolupar l'aplicacio Mysql utilitzava mysql_native_password.
 
 
+<<<<<<< HEAD
 2 - l'api de l'aplicacio utilitza yarn.lock com a sistema de control de dependencies. En ves de package-lock.json.
 S'ha de tenir en compte a l'hora de crear el dockerfile.  
 En ves de fer "RUN npm install", s'ha de fer "RUN yarn install".  
+=======
+- Vam acabar adaptant el codi una mica per funcionar amb una llibreria mes moderna _( mysql2/promises )_, per tal de fer funcionar el codi amb versiones noves i segures de mysql, y amb el plugin `caching_sha256_password`, d' aquesta manera el client de mysql del backend establia conexio amb el plugin modern. Aqui els comits on s'han fet els canvis:
+  
+  ```yaml
+  3fd6b0e7a125e642291f5ac949a0ce014b061242
+  7db62acfb0cfb4f3ac02bcf727ccb91254850cf1
+  d70c475818296048aa88dbd99fd429fbb33ee709
+  c5ca5fbbb957c3e2d6231aa1941de755d1e9237e
+  ```
+>>>>>>> 7e85605 (fixed some broken image links in conflicte 1)
 
 Reflexió breu:
 
@@ -90,9 +101,9 @@ No es fa rebase a la branca main per evitar reescriure l’historial compartit.
 
 ### 4.1 Com s’ha provocat
 
-- Hem cambiat una petita cosa del codi en `/api/routes/auth.js:6` 
+- Hem cambiat una petita cosa del codi en `/api/routes/auth.js:6`
 
-![aaa](./img/image3.png)
+![aaa](./img/image-3.png)
 
 - Despres he creat la pull request y fet merge a Dev.
 
@@ -112,7 +123,6 @@ No es fa rebase a la branca main per evitar reescriure l’historial compartit.
 - Un cop el company a resolt els conflictes fa merge pull request.
 
 ![alt text](./img/image-7.png)
-
 
 ### 4.2 Missatge d’error generat
 
@@ -167,7 +177,7 @@ _Hem creat dos Dockerfile, un per cada servei d'aplicació._
 
 Aquest projecte necesita les seguents variables del .env per funcionar tant en desenvolpament com en producció:
 
-```
+```sh
 DB_HOST=db
 DB_PORT=3306
 MYSQL_ROOT_PASSWORD=
@@ -207,17 +217,20 @@ L'aplicacio no te documentades les versions utilitzades. Vam trobar tres posible
 
   Al docker-composer.yml estavem utilitzant d'imatge: mysql:8, que agafava la versio 8.4.8 pero era nessessari utilitzar una versio inferior per poder utilitzar el plugin `mysql_native_password` com per exemple la 8.0.45, a mes a mes era necesari posar la seguent linea de configuracio al docker-compose per utilitzar el aquest plguin per defecte.
 
-  ```yml
+  ```yaml
   command: --default-authentication-plugin=mysql_native_password
   # Amb aquestes dues modificacions podiem tenir l' aplicacio funcionant
   # tot i que d' aquesta manera vulnerable.
   ```
 
 - Vam acabar adaptant el codi una mica per funcionar amb una llibreria mes moderna _( mysql2/promises )_, per tal de fer funcionar el codi amb versiones noves i segures de mysql, y amb el plugin `caching_sha256_password`, d' aquesta manera ja no calia tampoc la linea `--default-authentication-plugin=mysql_native_password` al docker-compose ja que el client de mysql del backend establia conexio amb el plugin modern. Aqui els comits on s'han fet els canvis:
-  `3fd6b0e7a125e642291f5ac949a0ce014b061242`
-  `7db62acfb0cfb4f3ac02bcf727ccb91254850cf1`
-  `d70c475818296048aa88dbd99fd429fbb33ee709`
-  `c5ca5fbbb957c3e2d6231aa1941de755d1e9237e`
+
+  ````yaml
+  3fd6b0e7a125e642291f5ac949a0ce014b061242
+  7db62acfb0cfb4f3ac02bcf727ccb91254850cf1
+  d70c475818296048aa88dbd99fd429fbb33ee709
+  c5ca5fbbb957c3e2d6231aa1941de755d1e9237e```
+  ````
 
 ## 7. Prova de desplegament des de zero
 
