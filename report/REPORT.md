@@ -91,12 +91,12 @@ No es fa rebase a la branca main per evitar reescriure l’historial compartit.
 
 Per provocar aquest conflicte hem cambiat una petita cosa del codi en `/api/routes/auth.js:6` a la branca `branca-Gonzalez`.
 
-![aaa](./img/image-3.png)
+![Imatge de com s' ha creat el primer canvi](./img/4-conflictes/primer-canvi.png)
 
 Despres he creat la **PR**, per posteriorment fer el merge a `Dev`.
 
-![alt text](./img/image-1.png)
-![alt text](./img/image-2.png)
+![Imatge de com es crea la PR](./img/4-conflictes/primera-pr-1.png)
+![Imatge de la PR recent creada abans de fer merge](./img/4-conflictes/primera-pr-2.png)
 
 Finalment per acabar de crear el conflicte, el meu company a fet un commit a la seva branca `branca-Borras` que sense fer git pull ni rebase de `Dev` a la seva branca, ha modificat la mateixa línea del codi en `/api/routes/auth.js:6 per arreglar el primer bug i crear el conflicte amb la **PR**.
 
@@ -104,26 +104,26 @@ Finalment per acabar de crear el conflicte, el meu company a fet un commit a la 
 
 Quan intentem crear la **PR** tira el error `cant automatically merge` i ens indica que podem crear la **PR** igualment. 
 
-![alt text](./img/image-4.png)
+![Imatge de el error de la PR](./img/4-conflictes/missatge-error.png)
 
 ### 4.3 Marcadors de conflicte
 
 La seguent imatge mostra el marcador del conflicte del github, alhora de resoldre la **PR**.
 
-![alt text](./img/image-8.png)
+![Imatge dels marcadors del conflicte](./img/4-conflictes/marcadors-conflicte.png)
 
 ### 4.4 Resolució aplicada
 
 
 El company ha entrat al menu de `Resolve conflicts` per resoldre els conflictes desde la **PR** de github, per posteriorment acabar de fer merge de la **PR** a `Dev`.
 
-![alt text](./img/image-5.png)
-![alt text](./img/image-8.png)
-![alt text](./img/image-6.png)
+![Imatge de com nomes es pot fer resolve conflicts](./img/4-conflictes/segona-pr-1.png)
+![Imatge dels marcadors del conflicte](./img/4-conflictes/marcadors-conflicte.png)
+![Imatge de el conflicte ja resolt](./img/4-conflictes/conflicte-resolt-1.png)
 
 Un cop el company a resolt els conflictes fa merge de la **PR** a `Dev`.
 
-![alt text](./img/image-7.png)
+![Imatge de la PR merged a Dev](./img/4-conflictes/conflicte-resolt-2.png)
 
 ### Quina decisió s’ha pres
 
