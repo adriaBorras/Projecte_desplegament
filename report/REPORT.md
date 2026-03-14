@@ -25,9 +25,9 @@ https://github.com/ludiemert/Full_Stack_App?tab=readme-ov-file
 
 ### Problemes detectats (si n’hi havia)
 
-No te una base de dades, aixi que s'ha de crear:    
+No te una base de dades, aixi que s'ha de crear:
 
-![alt text](img/image-3.png)  
+![alt text](img/image-3.png)
 
 Tambe hem de fer un entrypoint al docker-compose.yml per poder carregar les dades a l'hora d'executar el contenidor "db".
 
@@ -46,26 +46,15 @@ No Porta docker, hem d'implementar-lo per complet.
 ```bash
 {"code":"ER_NOT_SUPPORTED_AUTH_MODE","errno":1251,"sqlMessage":"Client does not support authentication protocol requested by server; consider upgrading MySQL client","sqlState":"08004","fatal":true}
 ```
+
 L'aplicacio no te documentades les versions utilitzades i ens hem trobat que per fer-la funcionar hem hagut de fer "Downgrade" de la veriso de Mysql.  
 Al docker-composer.yml estavem utilitzant d'imatge: mysql:8, que agafava la versio 8.4.8 pero era nessessari utilitzar una versio inferior. Com per exemple la 8.0.45.
 
 El motiu es que Mysql a partir de la versio 8.04 utilitza caching_sha2_password com a autenticacio per defecte, i en el moment en que es va desenvolupar l'aplicacio Mysql utilitzava mysql_native_password.
 
-
-<<<<<<< HEAD
 2 - l'api de l'aplicacio utilitza yarn.lock com a sistema de control de dependencies. En ves de package-lock.json.
 S'ha de tenir en compte a l'hora de crear el dockerfile.  
-En ves de fer "RUN npm install", s'ha de fer "RUN yarn install".  
-=======
-- Vam acabar adaptant el codi una mica per funcionar amb una llibreria mes moderna _( mysql2/promises )_, per tal de fer funcionar el codi amb versiones noves i segures de mysql, y amb el plugin `caching_sha256_password`, d' aquesta manera el client de mysql del backend establia conexio amb el plugin modern. Aqui els comits on s'han fet els canvis:
-  
-  ```yaml
-  3fd6b0e7a125e642291f5ac949a0ce014b061242
-  7db62acfb0cfb4f3ac02bcf727ccb91254850cf1
-  d70c475818296048aa88dbd99fd429fbb33ee709
-  c5ca5fbbb957c3e2d6231aa1941de755d1e9237e
-  ```
->>>>>>> 7e85605 (fixed some broken image links in conflicte 1)
+En ves de fer "RUN npm install", s'ha de fer "RUN yarn install".
 
 Reflexió breu:
 
@@ -175,9 +164,10 @@ _Hem creat dos Dockerfile, un per cada servei d'aplicació._
 
 ### 6.2 Variables d’entorn
 
-Aquest projecte necesita les seguents variables del .env per funcionar tant en desenvolpament com en producció:
+- Hem utilitzat les variables del .env per funcionar amb el docker-compose, aquestes variables s' utlitzan per configurar els serveis db, api,i front.
 
 ```sh
+# exemple minim del .env que necesita docker.
 DB_HOST=db
 DB_PORT=3306
 MYSQL_ROOT_PASSWORD=
@@ -188,18 +178,40 @@ BACKEND_PORT=8800
 FRONTEND_PORT=3000
 ```
 
+- Per utilzar les variables del **.env** al `docker-compose.yml` hem utilitzat la seguent propietat:
+
+```yaml
+env_file:
+  - ./.env
+```
+
+- Obviament cal referenciar les variables del .env en el docker-compose.yml de la seguent manera:
+
+```yaml
+# un exemple amb ports
+ports:
+  - "${FRONTEND_PORT}:3000"
+```
+
 ### 6.3 Persistència (si s'escau)
 
-1. Volumen nombrado (`db_data`)
+Hem creat un volum per la persistencia del servei de db, anomenat **db_data**.
 
-- **Definición:** Declarado en `volumes:` como `db_data`.
-- **Uso:** Montado en el servicio `db` → `/var/lib/mysql`.
-- **Propósito:** Persistir los datos de MySQL aunque el contenedor se elimine o recree.
+Declarat en **volumes** como **db_data** amb la seguent syntax al final del `docker-compose.yml` perque docker gestioni de manera interna la persistencia de les db.
 
-2.  Bind Mounts
+```yaml
+volumes:
+  db_data:
+```
 
-- **`./db-init:/docker-entrypoint-initdb.d` (db)**
-  - Ejecuta scripts SQL o shell al iniciar la base de datos por primera vez.
+I referenciar durant la definicio del servei db:
+
+```yaml
+volumes:
+  - db_data:/var/lib/mysql
+  - ./db-init:/docker-entrypoint-initdb.d
+```
+ A mes a mes com es pot observar a la linea  `./db-init:/docker-entrypoint-initdb.d` hem creat un script `blog.sql` a la carpeta db-init que docker ja gestiona internament i executa para inicializar la base de dades.
 
 ### 6.4 Problemes trobats
 
@@ -225,12 +237,12 @@ L'aplicacio no te documentades les versions utilitzades. Vam trobar tres posible
 
 - Vam acabar adaptant el codi una mica per funcionar amb una llibreria mes moderna _( mysql2/promises )_, per tal de fer funcionar el codi amb versiones noves i segures de mysql, y amb el plugin `caching_sha256_password`, d' aquesta manera ja no calia tampoc la linea `--default-authentication-plugin=mysql_native_password` al docker-compose ja que el client de mysql del backend establia conexio amb el plugin modern. Aqui els comits on s'han fet els canvis:
 
-  ````yaml
+  ```yaml
   3fd6b0e7a125e642291f5ac949a0ce014b061242
   7db62acfb0cfb4f3ac02bcf727ccb91254850cf1
   d70c475818296048aa88dbd99fd429fbb33ee709
-  c5ca5fbbb957c3e2d6231aa1941de755d1e9237e```
-  ````
+  c5ca5fbbb957c3e2d6231aa1941de755d1e9237e
+  ```
 
 ## 7. Prova de desplegament des de zero
 
@@ -252,14 +264,12 @@ Descriviu què ha fet cada membre de l’equip.
 1- Desplegament inicial del projecte: Adria Borras
 
 4,5 - Els dos integrants de l'equip.
-  4- Documentat per Adrian.
-  5- Documentat per Adria Borras.
+4- Documentat per Adrian.
+5- Documentat per Adria Borras.
 
 6- Documentacio Dockeritzacio : Adrian
 
 7- Prova de desplegament des de zero: Adrian
-
-
 
 ## 9. Temps invertit
 
@@ -283,12 +293,13 @@ Responeu breument:
 - Heu entès realment com funcionen els conflictes i Docker?
 
 ## 11. Altres problemes durant el projecte.
- 
- - Adria Borras:  
+
+- Adria Borras:
 
 No poder fer pull de les imatges de dockerhub (no se el motiu de per que no podia fer pulls de les imatges):
 
 Comprobar a descarregar una imatge:
+
 ```bash
 borras@borras-portable:~$ docker pull hello-world
 Using default tag: latest
@@ -296,12 +307,14 @@ latest: Pulling from library/hello-world
 failed to copy: httpReadSeeker: failed open: failed to do request: Get "https://docker-images-prod.6aa30f8b08e16409b46e0173d6de2f56.r2.cloudflarestorage.com/registry-v2/docker/registry/v2/blobs/sha256/1b/1b44b5a3e06a9aae883e7bf25e45c100be0bb81a0e01b32de604f3ac44711634/data?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=f1baa2dd9b876aeb89efebbfc9e5d5f4%2F20260308%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260308T193228Z&X-Amz-Expires=1200&X-Amz-SignedHeaders=host&X-Amz-Signature=ca58a7f83352b5630fc2e4f4599b96382c7d8bcac448684cbe15dcf02f7f4e93": dial tcp 172.64.66.1:443: i/o timeout
 borras@borras-portable:~$
 ```
+
 Comprovem fent una peticio, no tenim credencians i es denega, la conexio es correcta!
 
 ```bash
 borras@borras-portable:~/GitThings/Projecte_desplegament$ curl https://registry-1.docker.io/v2/
 {"errors":[{"code":"UNAUTHORIZED","message":"authentication required","detail":null}]}
 ```
+
 TLS/SSL handshake, comprova si l'encriptacio de la connexio entre client i servidor es correcta.
 
 ```bash
