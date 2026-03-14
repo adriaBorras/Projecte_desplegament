@@ -27,7 +27,6 @@ https://github.com/ludiemert/Full_Stack_App?tab=readme-ov-file
 
 No te una base de dades, aixi que s'ha de crear:
 
-![alt text](img/image-3.png)
 
 Tambe hem de fer un entrypoint al docker-compose.yml per poder carregar les dades a l'hora d'executar el contenidor "db".
 
@@ -90,46 +89,41 @@ No es fa rebase a la branca main per evitar reescriure l’historial compartit.
 
 ### 4.1 Com s’ha provocat
 
-- Hem cambiat una petita cosa del codi en `/api/routes/auth.js:6`
+Per provocar aquest conflicte hem cambiat una petita cosa del codi en `/api/routes/auth.js:6` a la branca `branca-Gonzalez`.
 
 ![aaa](./img/image-3.png)
 
-- Despres he creat la pull request y fet merge a Dev.
+Despres he creat la **PR**, per posteriorment fer el merge a `Dev`.
 
 ![alt text](./img/image-1.png)
 ![alt text](./img/image-2.png)
 
-- El meu company ha arreglat el bug y ha fet un PR, aquest posa que no es posible fer merge automaticament i haurem de resoldre manualment.
+Finalment per acabar de crear el conflicte, el meu company a fet un commit a la seva branca `branca-Borras` que sense fer git pull ni rebase de `Dev` a la seva branca, ha modificat la mateixa línea del codi en `/api/routes/auth.js:6 per arreglar el primer bug i crear el conflicte amb la **PR**.
+
+### 4.2 Missatge d’error generat
+
+Quan intentem crear la **PR** tira el error `cant automatically merge` i ens indica que podem crear la **PR** igualment. 
 
 ![alt text](./img/image-4.png)
 
-- El company fent click a resolve conflicts per acabar de fer merge de la PR ha entrat a el seguent menu.
+### 4.3 Marcadors de conflicte
+
+La seguent imatge mostra el marcador del conflicte del github, alhora de resoldre la **PR**.
+
+![alt text](./img/image-8.png)
+
+### 4.4 Resolució aplicada
+
+
+El company ha entrat al menu de `Resolve conflicts` per resoldre els conflictes desde la **PR** de github, per posteriorment acabar de fer merge de la **PR** a `Dev`.
 
 ![alt text](./img/image-5.png)
 ![alt text](./img/image-8.png)
 ![alt text](./img/image-6.png)
 
-- Un cop el company a resolt els conflictes fa merge pull request.
+Un cop el company a resolt els conflictes fa merge de la **PR** a `Dev`.
 
 ![alt text](./img/image-7.png)
-
-### 4.2 Missatge d’error generat
-
-Incloeu la sortida real de Git.
-
-### 4.3 Marcadors de conflicte
-
-Mostreu el fragment amb:
-
-```
-
-
-
-```
-
-### 4.4 Resolució aplicada
-
-Expliqueu:
 
 ### Quina decisió s’ha pres
 
@@ -211,7 +205,8 @@ volumes:
   - db_data:/var/lib/mysql
   - ./db-init:/docker-entrypoint-initdb.d
 ```
- A mes a mes com es pot observar a la linea  `./db-init:/docker-entrypoint-initdb.d` hem creat un script `blog.sql` a la carpeta db-init que docker ja gestiona internament i executa para inicializar la base de dades.
+
+A mes a mes com es pot observar a la linea `./db-init:/docker-entrypoint-initdb.d` hem creat un script `blog.sql` a la carpeta db-init que docker ja gestiona internament i executa para inicializar la base de dades.
 
 ### 6.4 Problemes trobats
 
