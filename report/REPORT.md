@@ -25,9 +25,8 @@ https://github.com/ludiemert/Full_Stack_App?tab=readme-ov-file
 
 ### Problemes detectats (si n’hi havia)
 
-No te una base de dades, aixi que s'ha de crear:    
+No te una base de dades, aixi que s'ha de crear:
 
-![alt text](img/image-3.png)  
 
 Tambe hem de fer un entrypoint al docker-compose.yml per poder carregar les dades a l'hora d'executar el contenidor "db".
 
@@ -46,15 +45,15 @@ No Porta docker, hem d'implementar-lo per complet.
 ```bash
 {"code":"ER_NOT_SUPPORTED_AUTH_MODE","errno":1251,"sqlMessage":"Client does not support authentication protocol requested by server; consider upgrading MySQL client","sqlState":"08004","fatal":true}
 ```
+
 L'aplicacio no te documentades les versions utilitzades i ens hem trobat que per fer-la funcionar hem hagut de fer "Downgrade" de la veriso de Mysql.  
 Al docker-composer.yml estavem utilitzant d'imatge: mysql:8, que agafava la versio 8.4.8 pero era nessessari utilitzar una versio inferior. Com per exemple la 8.0.45.
 
 El motiu es que Mysql a partir de la versio 8.04 utilitza caching_sha2_password com a autenticacio per defecte, i en el moment en que es va desenvolupar l'aplicacio Mysql utilitzava mysql_native_password.
 
-
 2 - l'api de l'aplicacio utilitza yarn.lock com a sistema de control de dependencies. En ves de package-lock.json.
 S'ha de tenir en compte a l'hora de crear el dockerfile.  
-En ves de fer "RUN npm install", s'ha de fer "RUN yarn install".  
+En ves de fer "RUN npm install", s'ha de fer "RUN yarn install".
 
 Reflexió breu:
 
@@ -90,47 +89,41 @@ No es fa rebase a la branca main per evitar reescriure l’historial compartit.
 
 ### 4.1 Com s’ha provocat
 
-- Hem cambiat una petita cosa del codi en `/api/routes/auth.js:6` 
+Per provocar aquest conflicte hem cambiat una petita cosa del codi en `/api/routes/auth.js:6` a la branca `branca-Gonzalez`.
 
-![aaa](./img/image3.png)
+![Imatge de com s' ha creat el primer canvi](./img/4-conflictes/primer-canvi.png)
 
-- Despres he creat la pull request y fet merge a Dev.
+Despres he creat la **PR**, per posteriorment fer el merge a `Dev`.
 
-![alt text](./img/image-1.png)
-![alt text](./img/image-2.png)
+![Imatge de com es crea la PR](./img/4-conflictes/primera-pr-1.png)
+![Imatge de la PR recent creada abans de fer merge](./img/4-conflictes/primera-pr-2.png)
 
-- El meu company ha arreglat el bug y ha fet un PR, aquest posa que no es posible fer merge automaticament i haurem de resoldre manualment.
-
-![alt text](./img/image-4.png)
-
-- El company fent click a resolve conflicts per acabar de fer merge de la PR ha entrat a el seguent menu.
-
-![alt text](./img/image-5.png)
-![alt text](./img/image-8.png)
-![alt text](./img/image-6.png)
-
-- Un cop el company a resolt els conflictes fa merge pull request.
-
-![alt text](./img/image-7.png)
-
+Finalment per acabar de crear el conflicte, el meu company a fet un commit a la seva branca `branca-Borras` que sense fer git pull ni rebase de `Dev` a la seva branca, ha modificat la mateixa línea del codi en `/api/routes/auth.js:6 per arreglar el primer bug i crear el conflicte amb la **PR**.
 
 ### 4.2 Missatge d’error generat
 
-Incloeu la sortida real de Git.
+Quan intentem crear la **PR** tira el error `cant automatically merge` i ens indica que podem crear la **PR** igualment. 
+
+![Imatge de el error de la PR](./img/4-conflictes/missatge-error.png)
 
 ### 4.3 Marcadors de conflicte
 
-Mostreu el fragment amb:
+La seguent imatge mostra el marcador del conflicte del github, alhora de resoldre la **PR**.
 
-```
-
-
-
-```
+![Imatge dels marcadors del conflicte](./img/4-conflictes/marcadors-conflicte.png)
 
 ### 4.4 Resolució aplicada
 
-Expliqueu:
+
+El company ha entrat al menu de `Resolve conflicts` per resoldre els conflictes desde la **PR** de github, per posteriorment acabar de fer merge de la **PR** a `Dev`.
+
+![Imatge de com nomes es pot fer resolve conflicts](./img/4-conflictes/segona-pr-1.png)
+![Imatge dels marcadors del conflicte](./img/4-conflictes/marcadors-conflicte.png)
+![Imatge de el conflicte ja resolt](./img/4-conflictes/conflicte-resolt-1.png)
+
+Un cop el company a resolt els conflictes fa merge de la **PR** a `Dev`.
+
+![Imatge de la PR merged a Dev](./img/4-conflictes/conflicte-resolt-2.png)
 
 ### Quina decisió s’ha pres
 
@@ -165,9 +158,10 @@ _Hem creat dos Dockerfile, un per cada servei d'aplicació._
 
 ### 6.2 Variables d’entorn
 
-Aquest projecte necesita les seguents variables del .env per funcionar tant en desenvolpament com en producció:
+- Hem utilitzat les variables del .env per funcionar amb el docker-compose, aquestes variables s' utlitzan per configurar els serveis db, api,i front.
 
-```
+```sh
+# exemple minim del .env que necesita docker.
 DB_HOST=db
 DB_PORT=3306
 MYSQL_ROOT_PASSWORD=
@@ -178,18 +172,41 @@ BACKEND_PORT=8800
 FRONTEND_PORT=3000
 ```
 
+- Per utilzar les variables del **.env** al `docker-compose.yml` hem utilitzat la seguent propietat:
+
+```yaml
+env_file:
+  - ./.env
+```
+
+- Obviament cal referenciar les variables del .env en el docker-compose.yml de la seguent manera:
+
+```yaml
+# un exemple amb ports
+ports:
+  - "${FRONTEND_PORT}:3000"
+```
+
 ### 6.3 Persistència (si s'escau)
 
-1. Volumen nombrado (`db_data`)
+Hem creat un volum per la persistencia del servei de db, anomenat **db_data**.
 
-- **Definición:** Declarado en `volumes:` como `db_data`.
-- **Uso:** Montado en el servicio `db` → `/var/lib/mysql`.
-- **Propósito:** Persistir los datos de MySQL aunque el contenedor se elimine o recree.
+Declarat en **volumes** como **db_data** amb la seguent syntax al final del `docker-compose.yml` perque docker gestioni de manera interna la persistencia de les db.
 
-2.  Bind Mounts
+```yaml
+volumes:
+  db_data:
+```
 
-- **`./db-init:/docker-entrypoint-initdb.d` (db)**
-  - Ejecuta scripts SQL o shell al iniciar la base de datos por primera vez.
+I referenciar durant la definicio del servei db:
+
+```yaml
+volumes:
+  - db_data:/var/lib/mysql
+  - ./db-init:/docker-entrypoint-initdb.d
+```
+
+A mes a mes com es pot observar a la linea `./db-init:/docker-entrypoint-initdb.d` hem creat un script `blog.sql` a la carpeta db-init que docker ja gestiona internament i executa para inicializar la base de dades.
 
 ### 6.4 Problemes trobats
 
@@ -207,17 +224,20 @@ L'aplicacio no te documentades les versions utilitzades. Vam trobar tres posible
 
   Al docker-composer.yml estavem utilitzant d'imatge: mysql:8, que agafava la versio 8.4.8 pero era nessessari utilitzar una versio inferior per poder utilitzar el plugin `mysql_native_password` com per exemple la 8.0.45, a mes a mes era necesari posar la seguent linea de configuracio al docker-compose per utilitzar el aquest plguin per defecte.
 
-  ```yml
+  ```yaml
   command: --default-authentication-plugin=mysql_native_password
   # Amb aquestes dues modificacions podiem tenir l' aplicacio funcionant
   # tot i que d' aquesta manera vulnerable.
   ```
 
 - Vam acabar adaptant el codi una mica per funcionar amb una llibreria mes moderna _( mysql2/promises )_, per tal de fer funcionar el codi amb versiones noves i segures de mysql, y amb el plugin `caching_sha256_password`, d' aquesta manera ja no calia tampoc la linea `--default-authentication-plugin=mysql_native_password` al docker-compose ja que el client de mysql del backend establia conexio amb el plugin modern. Aqui els comits on s'han fet els canvis:
-  `3fd6b0e7a125e642291f5ac949a0ce014b061242`
-  `7db62acfb0cfb4f3ac02bcf727ccb91254850cf1`
-  `d70c475818296048aa88dbd99fd429fbb33ee709`
-  `c5ca5fbbb957c3e2d6231aa1941de755d1e9237e`
+
+  ```yaml
+  3fd6b0e7a125e642291f5ac949a0ce014b061242
+  7db62acfb0cfb4f3ac02bcf727ccb91254850cf1
+  d70c475818296048aa88dbd99fd429fbb33ee709
+  c5ca5fbbb957c3e2d6231aa1941de755d1e9237e
+  ```
 
 ## 7. Prova de desplegament des de zero
 
@@ -239,14 +259,12 @@ Descriviu què ha fet cada membre de l’equip.
 1- Desplegament inicial del projecte: Adria Borras
 
 4,5 - Els dos integrants de l'equip.
-  4- Documentat per Adrian.
-  5- Documentat per Adria Borras.
+4- Documentat per Adrian.
+5- Documentat per Adria Borras.
 
 6- Documentacio Dockeritzacio : Adrian
 
 7- Prova de desplegament des de zero: Adrian
-
-
 
 ## 9. Temps invertit
 
@@ -270,12 +288,13 @@ Responeu breument:
 - Heu entès realment com funcionen els conflictes i Docker?
 
 ## 11. Altres problemes durant el projecte.
- 
- - Adria Borras:  
+
+- Adria Borras:
 
 No poder fer pull de les imatges de dockerhub (no se el motiu de per que no podia fer pulls de les imatges):
 
 Comprobar a descarregar una imatge:
+
 ```bash
 borras@borras-portable:~$ docker pull hello-world
 Using default tag: latest
@@ -283,12 +302,14 @@ latest: Pulling from library/hello-world
 failed to copy: httpReadSeeker: failed open: failed to do request: Get "https://docker-images-prod.6aa30f8b08e16409b46e0173d6de2f56.r2.cloudflarestorage.com/registry-v2/docker/registry/v2/blobs/sha256/1b/1b44b5a3e06a9aae883e7bf25e45c100be0bb81a0e01b32de604f3ac44711634/data?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=f1baa2dd9b876aeb89efebbfc9e5d5f4%2F20260308%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260308T193228Z&X-Amz-Expires=1200&X-Amz-SignedHeaders=host&X-Amz-Signature=ca58a7f83352b5630fc2e4f4599b96382c7d8bcac448684cbe15dcf02f7f4e93": dial tcp 172.64.66.1:443: i/o timeout
 borras@borras-portable:~$
 ```
+
 Comprovem fent una peticio, no tenim credencians i es denega, la conexio es correcta!
 
 ```bash
 borras@borras-portable:~/GitThings/Projecte_desplegament$ curl https://registry-1.docker.io/v2/
 {"errors":[{"code":"UNAUTHORIZED","message":"authentication required","detail":null}]}
 ```
+
 TLS/SSL handshake, comprova si l'encriptacio de la connexio entre client i servidor es correcta.
 
 ```bash
