@@ -10,7 +10,7 @@ Tecnologia principal (React / Fullstack):
 
 Enllaç al repositori: https://github.com/adriaBorras/Projecte_desplegament
 
-Data d’entrega: ??
+Data d’entrega: 15/03/2026
 
 ## 2. Estat inicial del projecte
 
@@ -27,6 +27,7 @@ https://github.com/ludiemert/Full_Stack_App?tab=readme-ov-file
 
 No te una base de dades, aixi que s'ha de crear:
 
+![alt text](img/image-1.png)
 
 Tambe hem de fer un entrypoint al docker-compose.yml per poder carregar les dades a l'hora d'executar el contenidor "db".
 
@@ -51,7 +52,12 @@ Al docker-composer.yml estavem utilitzant d'imatge: mysql:8, que agafava la vers
 
 El motiu es que Mysql a partir de la versio 8.04 utilitza caching_sha2_password com a autenticacio per defecte, i en el moment en que es va desenvolupar l'aplicacio Mysql utilitzava mysql_native_password.
 
-2 - l'api de l'aplicacio utilitza yarn.lock com a sistema de control de dependencies. En ves de package-lock.json.
+Cal tambe afegir la directiva seguent al docker-compose.yml:  
+```bash
+command: --default-authentication-plugin=mysql_native_password
+```
+
+2 - l'api de l'aplicacio utilitza yarn.lock com a sistema de control de dependencies en ves de package-lock.json.
 S'ha de tenir en compte a l'hora de crear el dockerfile.  
 En ves de fer "RUN npm install", s'ha de fer "RUN yarn install".
 
@@ -59,6 +65,7 @@ Reflexió breu:
 
 Què faltava perquè aquest projecte es pogués considerar “professional”?
 
+Si parlem de l'aplicacio en la que es basa el projecte:
 Millor documentacio i, opcionalment algun mitja de desplegament com docker.
 
 ## 3. Workflow Git aplicat
@@ -81,7 +88,7 @@ Fem merges normals per combinar les branques de desenvolupament de cada desenvol
 
 ### Ús (o no) de rebase
 
-No es fa rebase a la branca main per evitar reescriure l’historial compartit.
+No es fa rebase a la branca main perque es una branca compartida i el rebase reescriu l’historial, pot provocar problemes amb altres desenvolupadors.
 
 ### Incloeu exemples reals de commits rellevants (amb missatge i explicació del canvi).
 
@@ -239,7 +246,7 @@ L'aplicacio no te documentades les versions utilitzades. Vam trobar tres posible
   c5ca5fbbb957c3e2d6231aa1941de755d1e9237e
   ```
 
-## 7. Prova de desplegament des de zero
+## 7. Prova de desplegament des de zero (Branca Dev Modificacions Adrian)
 
 Expliqueu els passos exactes que hauria de seguir una persona externa:
 
@@ -252,40 +259,98 @@ Indiqueu també:
 - Ports utilitzats
 - Credencials de prova (si n’hi ha)
 
+
+## 7.5 Prova de desplegament des de zero (Branca main Adria Borras)
+
+
+Expliqueu els passos exactes que hauria de seguir una persona externa:
+
+- Clonar repositori
+
+![alt text](img/image-2.png)
+
+- modificar .env.default a .env amb les credencials desitjades:
+
+![alt text](img/image-5.png)
+
+- Executar comanda
+
+  ![alt text](img/image-3.png)
+
+- Accedir a l’aplicació
+
+![alt text](img/image-4.png)
+
+Indiqueu també:
+
+- Ports utilitzats
+
+```bash
+Database port:3307
+Backend (API) port:8800
+Frontend (App) port:3000
+```
+
+- Credencials de prova (si n’hi ha)
+
+```bash
+MYSQL_ROOT_PASSWORD=rootpassword
+MYSQL_DATABASE=blog
+MYSQL_USER=bloguser
+MYSQL_PASSWORD=blogpass
+```
+
 ## 8. Repartiment de tasques
 
 Descriviu què ha fet cada membre de l’equip.
 
 1- Desplegament inicial del projecte: Adria Borras
+  - Creacio dockerfile: Api i Frontend.
+  - Creacio docker-compose.yml
+  - Creacio arxius .env
+  - Creacio taules BBDD
 
-4,5 - Els dos integrants de l'equip.
-4- Documentat per Adrian.
-5- Documentat per Adria Borras.
+4 - Els dos integrants de l'equip.  
+- Documentat per Adrian.
+
+5 - Adria Borras.
+- Documentat per Adria Borras.
 
 6- Documentacio Dockeritzacio : Adrian
 
 7- Prova de desplegament des de zero: Adrian
+
+7.5- Prova de desplegament des de zero (Branca Main): Adria Borras
 
 ## 9. Temps invertit
 
 Indiqueu aproximadament:
 
 - Temps dedicat a Git:  
-  Adria Borras: 1 hora
+  - Adria Borras: 2 hores
 
 - Temps dedicat a Docker:  
-  Adria Borras: 4 hores (No productives, intentant solucionar problemes)
+  - Adria Borras: 4 hores (No productives, intentant solucionar problemes)
 
 - Temps dedicat a documentació:  
-  Adria Borras: 2 hores
+  - Adria Borras: 3 hores
 
 ## 10. Reflexió final
 
 Responeu breument:
 
-- Quina ha estat la part més complexa?
-- Què faríeu diferent en un projecte real?
-- Heu entès realment com funcionen els conflictes i Docker?
+- Quina ha estat la part més complexa?  
+    Adria Borras:   
+    - El treball en equip. 
+    - Resoldre els problemes d'utilitzar verisons anteriors al no estar documentades.
+
+- Què faríeu diferent en un projecte real?  
+  Adria Borras:  
+  - Repartir millor les tasques al inici del projecte.
+
+- Heu entès realment com funcionen els conflictes i Docker?  
+  Adria Borras: 
+  - Sip! encara que falta mes practica i utilitzar diferents metodologies.
 
 ## 11. Altres problemes durant el projecte.
 
@@ -308,14 +373,6 @@ Comprovem fent una peticio, no tenim credencians i es denega, la conexio es corr
 ```bash
 borras@borras-portable:~/GitThings/Projecte_desplegament$ curl https://registry-1.docker.io/v2/
 {"errors":[{"code":"UNAUTHORIZED","message":"authentication required","detail":null}]}
-```
-
-TLS/SSL handshake, comprova si l'encriptacio de la connexio entre client i servidor es correcta.
-
-```bash
-borras@borras-portable:~/GitThings/Projecte_desplegament$ curl https://172.64.66.1
-curl: (35) OpenSSL/3.0.13: error:0A000410:SSL routines::sslv3 alert handshake failure
-borras@borras-portable:~/GitThings/Projecte_desplegament$
 ```
 
 Arreglat creant i editant el seguent arxiu:  
