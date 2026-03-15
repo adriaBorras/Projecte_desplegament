@@ -144,13 +144,50 @@ Què heu après d’aquest conflicte?
 
 ## 5. Conflicte 2 – Dependències o estructura
 
+
 ### 5.1 Descripció del conflicte
+
+
+
+Aquest conflicte es produeix quan dos desenvolupadors afegeixen dependències de CSS diferents:
+
+Un desenvolupador (branca-BorrasPlayer2) ha instalat una dependencia (Bootstrap):
+![Imatge1](./img/error-Dependencia1.png)
+
+Un segon desenvolupador (branca-Borras) ha instalat una altra dependencia (Tailwind):
+![Imatge1](./img/error-Dependencia2.png)
+
+
+Al fer merge, ens indica que hi han conflictes:
+
+![Imatge1](./img/error-Dependencia4.png)
+
+
 
 ### 5.2 Error generat
 
+Git no pot fer el merge automatic, Si no es resol el conflicte:
+
+Els estils de Bootstrap o Tailwind no es carregarien correctament.
+
+L’aplicacio podria fallar en executar-se, ja que npm install no podria determinar quina dependència incloure.
+
+
 ### 5.3 Resolució aplicada
 
+Hem decidit quedar-nos amb els dos frameworks, aixi que accemptem els canvis de la branca-BorrasPlayer2.  
+Podem veure a continuacio el resultat:
+
+![Imatge1](./img/error-Dependencia5.png)
+
+altres conflictes:
+
+![Imatge1](./img/error-Dependencia6.png)
+
+
 ### 5.4 Diferències respecte al conflicte anterior
+
+Aquest conflicte es diferent del primer perque no afecta la logica del codi, sino la configuracio i les dependencies del projecte, la qual cosa pot afectar tots els desenvolupadors si no es resol correctament.
 
 ## 6. Dockerització
 
