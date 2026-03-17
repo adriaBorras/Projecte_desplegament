@@ -27,7 +27,6 @@ https://github.com/ludiemert/Full_Stack_App?tab=readme-ov-file
 
 No te una base de dades, aixi que s'ha de crear:
 
-
 Tambe hem de fer un entrypoint al docker-compose.yml per poder carregar les dades a l'hora d'executar el contenidor "db".
 
 ### Existència o no de .gitignore
@@ -102,7 +101,7 @@ Finalment per acabar de crear el conflicte, el meu company a fet un commit a la 
 
 ### 4.2 Missatge d’error generat
 
-Quan intentem crear la **PR** tira el error `cant automatically merge` i ens indica que podem crear la **PR** igualment. 
+Quan intentem crear la **PR** tira el error `cant automatically merge` i ens indica que podem crear la **PR** igualment.
 
 ![Imatge de el error de la PR](./img/4-conflictes/missatge-error.png)
 
@@ -113,7 +112,6 @@ La seguent imatge mostra el marcador del conflicte del github, alhora de resoldr
 ![Imatge dels marcadors del conflicte](./img/4-conflictes/marcadors-conflicte.png)
 
 ### 4.4 Resolució aplicada
-
 
 El company ha entrat al menu de `Resolve conflicts` per resoldre els conflictes desde la **PR** de github, per posteriorment acabar de fer merge de la **PR** a `Dev`.
 
@@ -251,6 +249,57 @@ Indiqueu també:
 
 - Ports utilitzats
 - Credencials de prova (si n’hi ha)
+
+1. Instalar y configurar el servei mariadb.
+
+- Apk add del paquet, perque estem a un container de proxmox amb alpine.
+
+![alt text](img/7-desplegament/apk-add-mariadb.png)
+
+- Executem el script que inicialitza la configuració de mariadb.
+
+![alt text](img/7-desplegament/mariadb-install.png)
+
+- Asegurem que la carpeta esta creada y asignem la propietat del directori al usuari mysql.
+
+![alt text](img/7-desplegament/mkdir-chown-mariadb.png)
+
+- Arranquem el servei per comprobar que esta funcionant correctament.
+
+![alt text](img/7-desplegament/run-check-mariadb.png)
+
+- Creem usuari, la base de dades amb els seus inserts, donem permisos al usuari creat, i finalment fem actualitzem la taula de permisos.
+
+![alt text](img/7-desplegament/create-mariadb-user.png)
+![alt text](img/7-desplegament/create-database.png)
+![alt text](img/7-desplegament/example-insert.png)
+![alt text](img/7-desplegament/grant-and-flush-privileges.png)
+![alt text](img/7-desplegament/adding-port-to-mariadb-config-1.png)
+![alt text](img/7-desplegament/adding-port-to-mariadb-config-2.png)
+![alt text](img/7-desplegament/adding-port-to-mariadb-config-3.png)
+
+2. Instalar nvm, npm y yarn.
+
+![alt text](img/7-desplegament/installing-npm-node-and-yarn.png)
+
+3. Finalment git clone del projecte y posar en funcionament.
+
+![alt text](img/7-desplegament/git-clone.png)
+
+. Despres de clonar el repo, hem de crear el .env que te les variables per posar en marxa el projecte.
+
+![alt text](img/7-desplegament/config-env-file-1.png)
+![alt text](img/7-desplegament/config-env-file-2.png)
+
+- Un cop creat instalem les dependencies.
+
+![alt text](img/7-desplegament/installing-api-dependences.png)
+![alt text](img/7-desplegament/installing-front-dependences.png)
+
+- Finalment arranquem les versions dev.
+  ![alt text](img/7-desplegament/api-runing.png)
+  ![alt text](img/7-desplegament/front-runing.png)
+  ![alt text](img/7-desplegament/running.png)
 
 ## 8. Repartiment de tasques
 
