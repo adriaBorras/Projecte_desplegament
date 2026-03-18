@@ -89,8 +89,8 @@ http://localhost:3000/
 
     cd Projecte_desplegament
 
-3- Cal renombrar els arxius ".env.default" a ".env" amb les dades de prova de la base de dades.
-    - Al directori api
+3- Cal renombrar els arxius ".env.default" a ".env" amb les dades de prova de la base de dades.  
+    - Al directori api  
     - Al directori "root" del projecte.
 
 4- Despleguem l'aplicacio:
